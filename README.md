@@ -199,7 +199,7 @@ addition, an online public version can be found [here](https://llvm.discourse.gr
 
 During my project, I was keeping a Google doc where I interacted with my mentors
 and documented what has been done, what challenges I have encountered, and my
-plans. The public copy is availiable [here](https://docs.google.com/document/d/1nnA8Rf3R18_V4GsYu0rWNFAUoH6fewFptWH08Eqx4gI/).
+plans. The public copy is availiable [here](https://docs.google.com/document/d/1nnA8Rf3R18_V4GsYu0rWNFAUoH6fewFptWH08Eqx4gI/edit?usp=sharing).
 
 I have also created a manual to document what is supported in the SPIR-V to LLVM
 dialect conversion at the moment. This can be found on official MLIR website
