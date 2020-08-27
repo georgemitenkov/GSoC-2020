@@ -19,9 +19,27 @@ directory in this repository.
 
 ## Results
 
-TODO: What is supported
+Having been working on this project for 3 months, the following results were
+achieved.
 
-TODO: The runner
+- Coverage
+
+  The conversion nearly fully supports all scalar operations, wuth an overall
+  value of TODO: add a number. More precise information on the supported types
+  and operations can be found in the [conversion manual](https://mlir.llvm.org/docs/SPIRVToLLVMDialectConversion/).
+
+- SPIR-V CPU runner prototype
+
+  In order to evaluate the correctness of the conversion, I have
+  implemented a prototype of `mlir-spirv-cpu-runner` that is currently
+  under review. The main idea is that the module with Stadard dialect host
+  code and a GPU dialect kernel module can be fully converted to LLVM dialect
+  via SPIR-V to LLVM path.
+
+  At the moment, there is no multi-threading/parallelism involved in the
+  conversion. Hence, my mentors and I decided to limit the runner for the case
+  of a single-threaded kernel. The results are still a great indicator of the
+  semantically correct conversion.
 
 ## Patches and the work done
 
@@ -184,20 +202,53 @@ repository, particularly:
   [here](https://github.com/llvm/llvm-project/tree/05777ab941063192b9ccb1775358a83a2700ccc1/mlir/include/mlir/Conversion/SPIRVToLLVM)
   and [here](https://github.com/llvm/llvm-project/tree/05777ab941063192b9ccb1775358a83a2700ccc1/mlir/lib/Conversion/SPIRVToLLVM)
  - Tests are located [here](https://github.com/llvm/llvm-project/tree/05777ab941063192b9ccb1775358a83a2700ccc1/mlir/test/Conversion/SPIRVToLLVM)
- - TODO: add code location for the runner
+
+The runner code has not been landed to master yet.
 
 ## Future work
 
-1. Land the `mlir-spirv-cpu-runner` (This may require changes to `mlir::ExecutionEngine`)
+The work on the SPIR-V to LLVM dialect conversion my be continued in the
+following ways:
 
-2. Add more type/op conversions (*e.g.* `spv.matrix` or atomic ops) or scale existing conversion patterns (*e.g.* `spv.constant` supporting arrays or structs).
+1. Land the `mlir-spirv-cpu-runner`
 
-3. Map GPU-level multi-threading/parallelism to LLVM.
+   The current version of `mlir-spirv-cpu-runner` uses a custom function
+   callback to propagate information about hoe to construct an LLVM IR module.
+   This is a not a nice way and needs a better solution. A possible approach
+   would be to improve `mlir::ExecutionEngine`. More can be found in related
+   [revision](https://reviews.llvm.org/D86108) and
+   [discussion](https://llvm.discourse.group/t/rfc-executing-multiple-mlir-modules/1616/3).
+
+2. Add more type/op conversions or scale existing conversion patterns
+
+   A great way to continue the current work would be adding new conversion
+   patters, *e.g.* for atomic ops. Also, more types like `spv.matrix` can be
+   supported.
+   
+   Another possible contribution is to scale some of the exisyting patterns,
+   including but not limited to having a `spv.constant` to support arrays and
+   structs or map `spv.loop`'s control to LLVM IR metadata.
+   
+   Not that what has not been done can be easily deduced from the conversion
+   manual described above.
+
+3. Model SPIR-V decorations in LLVM dialect
+
+   This project did not intend to add support for SPIR-V decoration attributes.
+   However, they can be mapped to LLVM IR metadata/flags/etc. A good starting
+   point would be a [post](https://llvm.discourse.group/t/spir-v-to-llvm-dialect-conversion-decorations-and-other-attributes-semantics/1179) on modelling some of these decorations.
+
+4. Map GPU-level multi-threading/parallelism to LLVM.
+
+   A very interesing next step is to find a way how to represent GPU's
+   workgroups, blocks and threads on the CPU level. This requires a major
+   discussion within the community, so it can be considered as a long-term
+   goal.
 
 ## Acknowledgement
 
 I would like to thank my mentors Lei Zhang and Mahesh Ravishankar for their
-guidance and support along the project. I have learnt a lot about MLIR
+guidance and support along the project. I have learnt a lot about MLIR's
 ecosystem, SPIR-V, Vulkan and GPU programming. Also, I would like to thank
 Alex Zinenko for his help on the LLVM side, and River Riddle for his help with
 code reviews and C++/LLVM/MLIR APIs.
