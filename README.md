@@ -24,9 +24,9 @@ achieved.
 
 - Coverage
 
-  The conversion nearly fully supports all scalar operations, wuth an overall
-  value of TODO: add a number. More precise information on the supported types
-  and operations can be found in the [conversion manual](https://mlir.llvm.org/docs/SPIRVToLLVMDialectConversion/).
+  The conversion nearly fully supports all scalar operations. More precise
+  information on the supported types and operations can be found in the
+  [conversion manual](https://mlir.llvm.org/docs/SPIRVToLLVMDialectConversion/).
 
 - SPIR-V CPU runner prototype
 
@@ -50,8 +50,10 @@ functionality or features. All patches have been commited and pushed to master
 unless stated otherwise.
 
 1. **Setting up the core infrastructure required for the SPIR-V to LLVM dialect conversion**
+
    Patches:
-   - https://reviews.llvm.org/D81100
+
+   - [[MLIR][SPIRVToLLVM] Add skeleton for SPIR-V to LLVM dialect conversion](https://reviews.llvm.org/D81100)
 
 2. **Main conversion patterns for scalar ops**
 
@@ -60,15 +62,15 @@ unless stated otherwise.
 
    Patches:
 
-   - https://reviews.llvm.org/D81305
-   - https://reviews.llvm.org/D81487
-   - https://reviews.llvm.org/D81546
-   - https://reviews.llvm.org/D81812
-   - https://reviews.llvm.org/D82285
-   - https://reviews.llvm.org/D82286
-   - https://reviews.llvm.org/D82637
-   - https://reviews.llvm.org/D82748
-   - https://reviews.llvm.org/D82640
+   - [[MLIR][SPIRVToLLVM] Implemented conversion for arithmetic ops and 3 bitwise ops](https://reviews.llvm.org/D81305)
+   - [[MLIR][SPIRVToLLVM] Added conversion for SPIR-V comparison ops](https://reviews.llvm.org/D81487)
+   - [[MLIR][SPIRVToLLVM] Implemented shift conversion pattern](https://reviews.llvm.org/D81546)
+   - [[MLIR][SPIRVToLLVM] Implemented cast ops conversion, added 4 logical ops and support of UModOp](https://reviews.llvm.org/D81812)
+   - [[MLIR][LLVMDialect] Added bitreverse and ctpop intrinsics](https://reviews.llvm.org/D82285)
+   - [[MLIR][SPIRVToLLVM] Conversion for bitrverse and bitcount ops](https://reviews.llvm.org/D82286)
+   - [[MLIR][SPIRVToLLVM] Implementation of bitwise and logical not](https://reviews.llvm.org/D82637)
+   - [[MLIR][SPIRVToLLVM] Added Bitcast conversion pattern](https://reviews.llvm.org/D82748)
+   - [[MLIR][SPIRVToLLVM] Implementation of spv.BitFieldSExtract and spv.BitFieldUExtract patterns](https://reviews.llvm.org/D82640)
 
 3. **Extra type conversions**
 
@@ -79,9 +81,9 @@ unless stated otherwise.
 
    Patches:
 
-   - https://reviews.llvm.org/D83285
-   - https://reviews.llvm.org/D83399
-   - https://reviews.llvm.org/D83403
+   - [[MLIR][SPIRVToLLVM] SPIR-V types size in bytes function](https://reviews.llvm.org/D83285)
+   - [[MLIR][SPIRVToLLVM] Conversion of SPIR-V array, runtime array, and pointer types](https://reviews.llvm.org/D83399)
+   - [[MLIR][SPIRVToLLVM] Conversion of SPIR-V struct type without offset](https://reviews.llvm.org/D83403)
 
 4. **SPIR-V function and module conversions**
 
@@ -90,67 +92,73 @@ unless stated otherwise.
 
    Patches:
 
-   - https://reviews.llvm.org/D81931
-   - https://reviews.llvm.org/D82468
-   - https://reviews.llvm.org/D83786 
+   - [[MLIR][SPIRVToLLVM] Implementation of spv.func conversion, and return ops](https://reviews.llvm.org/D81931)
+   - [[MLIR][SPIRVToLLVM] Implementation of SPIR-V module conversion pattern](https://reviews.llvm.org/D82468)
+   - [[MLIR][SPIRVToLLVM] SPIRV function fix and nits](https://reviews.llvm.org/D83786)
 
 5. **Control flow ops conversion**
 
-   This patches implement conversions for branches, function calls and
+   These patches implement conversions for branches, function call and
    structured control flow.
 
    Patches:
 
-   - https://reviews.llvm.org/D83030
-   - https://reviews.llvm.org/D83784
-   - https://reviews.llvm.org/D83860
-   - https://reviews.llvm.org/D83658
-   - https://reviews.llvm.org/D84657
-   - https://reviews.llvm.org/D84245
+   - [[MLIR][SPIRVToLLVM] SPIR-V function call conversion pattern](https://reviews.llvm.org/D83030)
+   - [[MLIR][SPIRVToLLVM] Conversion of SPIR-V branch ops](https://reviews.llvm.org/D83784)
+   - [[MLIR][SPIRVToLLVM] SelectionOp conversion pattern](https://reviews.llvm.org/D83860)
+   - [[MLIR][LLVMDialect] Added branch weights attribute to CondBrOp](https://reviews.llvm.org/D83658)
+   - [[MLIR][SPIRVToLLVM] Branch weights support for BranchConditional conversion](https://reviews.llvm.org/D84657)
+   - [[MLIR][SPIRVToLLVM] Conversion pattern for loop op](https://reviews.llvm.org/D84245)
 
 6. **Memory related ops conversion**
+   
+   A number of patches that implement conversion patterns for `spv.Load`,
+   `spv.Variable` and other ops that involve memory handling.
 
    Patches:
 
-   - https://reviews.llvm.org/D84224
-   - https://reviews.llvm.org/D84236
-   - https://reviews.llvm.org/D84396
-   - https://reviews.llvm.org/D84739
-   - https://reviews.llvm.org/D84626
+   - [[MLIR][SPIRVToLLVM] Conversion of SPIR-V variable op](https://reviews.llvm.org/D84224)
+   - [[MLIR][SPIRVToLLVM] Conversion of load and store SPIR-V ops](https://reviews.llvm.org/D84236)
+   - [[MLIR][LLVMDialect] Added volatile and nontemporal attributes to load and store](https://reviews.llvm.org/D84396)
+   - [[MLIR][SPIRVToLLVM] Added support of volatile and nontemporal memory access in load/store](https://reviews.llvm.org/D84739)
+   - [[MLIR][SPIRVToLLVM] Conversion for global and addressof](https://reviews.llvm.org/D84626)
 
 7. **GLSL ops conversion**
 
-   This patches introduce conversion patterns for ops from
+   These patches introduce conversion patterns for ops from
    [GLSL extended instruction set](https://www.khronos.org/registry/spir-v/specs/1.0/GLSL.std.450.html).
 
    Patches:
 
-   - https://reviews.llvm.org/D84627
-   - https://reviews.llvm.org/D84633
-   - https://reviews.llvm.org/D84661
+   - [[MLIR][SPIRVToLLVM] Conversion patterns for GLSL ops](https://reviews.llvm.org/D84627)
+   - [[MLIR][SPIRVToLLVM] Conversion for inverse sqrt and tanh](https://reviews.llvm.org/D84633)
+   - [[MLIR][SPIRVToLLVM] Conversion of GLSL ops to LLVM intrinsics](https://reviews.llvm.org/D84661)
 
 8. **Other ops conversions**
 
    These patches include conversion for ops that do not fall into any category
-   (like `spv.Undef` for example).
+   (like `spv.constant` or `spv.Undef` for example).
 
    Patches:
 
-   - https://reviews.llvm.org/D82936
-   - https://reviews.llvm.org/D83291
+   - [[MLIR][SPIRVToLLVM] Added spv.constant conversion pattern for scalar and vector types](https://reviews.llvm.org/D82936)
+   - [[MLIR][SPIRVToLLVM] Miscellaneous ops conversion: select, fmul and undef](https://reviews.llvm.org/D83291)
 
 9. **mlir-spirv-cpu-runner patches**
 
+   In order to implement `mlir-spirv-cpu-runner`, I had to submit extra
+   patches to deal with `spc.EntryPoint` or `spv.AccessChain` conversion, as
+   well as to support array strides and struct offsets.
+
    Patches:
 
-   - https://reviews.llvm.org/D86109
-   - https://reviews.llvm.org/D86285
-   - https://reviews.llvm.org/D86288
-   - https://reviews.llvm.org/D86386
-   - https://reviews.llvm.org/D86384
-   - https://reviews.llvm.org/D86515
-   - https://reviews.llvm.org/D86112 (Under review)
-   - https://reviews.llvm.org/D86108 (Under review)
+   - [[MLIR][SPIRVToLLVM] Additional conversions for spirv-runner](https://reviews.llvm.org/D86109)
+   - [[MLIR][SPIRVToLLVM] Removed std to llvm patterns from the conversion](https://reviews.llvm.org/D86285)
+   - [[MLIR][SPIRV] Added optional name to SPIR-V module](https://reviews.llvm.org/D86386)
+   - [[MLIR][GPUToSPIRV] Passing gpu module name to SPIR-V module](https://reviews.llvm.org/D86384)
+   - [[MLIR][SPIRVToLLVM] Added a hook for descriptor set / binding encoding](https://reviews.llvm.org/D86515)
+   - [[MLIR][mlir-spirv-cpu-runner] A pass to emulate a call to kernel in LLVM](https://reviews.llvm.org/D86112) (Under review)
+   - [[MLIR][mlir-spirv-cpu-runner] A SPIR-V cpu runner prototype](https://reviews.llvm.org/D86108) (Under review)
 
    Related discussions:
 
@@ -160,17 +168,18 @@ unless stated otherwise.
 
 10. **Documentation and style fixes**
 
-    These patches contain cthe conversion's documentation updates, as well as
+    These patches contain the conversion's documentation updates, as well as
     some style/bug fixes.
 
     Patches:
 
-    - https://reviews.llvm.org/D83322
-    - https://reviews.llvm.org/D85181
-    - https://reviews.llvm.org/D85206
-    - https://reviews.llvm.org/D84734
-    - https://reviews.llvm.org/D85277
-    - https://reviews.llvm.org/D86674
+    - [[MLIR][SPIRVToLLVM] Documentation for SPIR-V to LLVM conversion](https://reviews.llvm.org/D83322)
+    - [[MLIR][SPIRVToLLVM] Indentation and style fix in tests](https://reviews.llvm.org/D85181)
+    - [[MLIR][SPIRVToLLVM] Indentation and style fix in tests](https://reviews.llvm.org/D85206)
+    - [[MLIR][SPIRVToLLVM] Updated documentation for SPIR-V to LLVM conversion](https://reviews.llvm.org/D84734)
+    - [[MLIR][SPIRVToLLVM] Updated LLVM types in the documentation](https://reviews.llvm.org/D85277)
+    - [[MLIR][SPIRVToLLVM] Updated the documentation for the conversion](https://reviews.llvm.org/D86288)
+    - [[MLIR][SPIRVToLLVM] Updated the documentation for type conversion](https://reviews.llvm.org/D86674)
 
 11. **Patches outside SPIR-V to LLVM conversion**
 
@@ -178,10 +187,10 @@ unless stated otherwise.
     These, for example, include improving SPIR-V documentation, fixing bugs or
     adding support for particular operations.
 
-    - https://reviews.llvm.org/D83791
-    - https://reviews.llvm.org/D84196
-    - https://reviews.llvm.org/D84731
-    - https://reviews.llvm.org/D84175
+    - [[MLIR][StdToSPIRV] Fixed a typo in ops conversion tests](https://reviews.llvm.org/D83791)
+    - [[MLIR][SPIRV] Updated documentation for variableOp](https://reviews.llvm.org/D84196)
+    - [[MLIR][SPIRV] Added storage class constraint on global variable](https://reviews.llvm.org/D84731)
+    - [[MLIR][SPIRV] Control attributes parsing/printing for loop and selection](https://reviews.llvm.org/D84175)
 
 ## Important links
 
@@ -190,7 +199,7 @@ addition, an online public version can be found [here](https://llvm.discourse.gr
 
 During my project, I was keeping a Google doc where I interacted with my mentors
 and documented what has been done, what challenges I have encountered, and my
-plans. The public copy is availiable (TODO: add link) [here]().
+plans. The public copy is availiable [here](https://docs.google.com/document/d/1nnA8Rf3R18_V4GsYu0rWNFAUoH6fewFptWH08Eqx4gI/).
 
 I have also created a manual to document what is supported in the SPIR-V to LLVM
 dialect conversion at the moment. This can be found on official MLIR website
@@ -210,35 +219,35 @@ The runner code has not been landed to master yet.
 The work on the SPIR-V to LLVM dialect conversion my be continued in the
 following ways:
 
-1. Land the `mlir-spirv-cpu-runner`
+1. **Land the `mlir-spirv-cpu-runner`**
 
    The current version of `mlir-spirv-cpu-runner` uses a custom function
-   callback to propagate information about hoe to construct an LLVM IR module.
-   This is a not a nice way and needs a better solution. A possible approach
+   callback to propagate information about how to construct an LLVM IR module.
+   This is not a nice way and needs a better solution. A possible approach
    would be to improve `mlir::ExecutionEngine`. More can be found in related
    [revision](https://reviews.llvm.org/D86108) and
    [discussion](https://llvm.discourse.group/t/rfc-executing-multiple-mlir-modules/1616/3).
 
-2. Add more type/op conversions or scale existing conversion patterns
+2. **Add more type/op conversions or scale existing conversion patterns**
 
    A great way to continue the current work would be adding new conversion
    patters, *e.g.* for atomic ops. Also, more types like `spv.matrix` can be
    supported.
    
-   Another possible contribution is to scale some of the exisyting patterns,
+   Another possible contribution is to scale some of the existing patterns,
    including but not limited to having a `spv.constant` to support arrays and
    structs or map `spv.loop`'s control to LLVM IR metadata.
    
    Not that what has not been done can be easily deduced from the conversion
    manual described above.
 
-3. Model SPIR-V decorations in LLVM dialect
+3. **Model SPIR-V decorations in LLVM dialect**
 
    This project did not intend to add support for SPIR-V decoration attributes.
    However, they can be mapped to LLVM IR metadata/flags/etc. A good starting
    point would be a [post](https://llvm.discourse.group/t/spir-v-to-llvm-dialect-conversion-decorations-and-other-attributes-semantics/1179) on modelling some of these decorations.
 
-4. Map GPU-level multi-threading/parallelism to LLVM.
+4. **Map GPU-level multi-threading/parallelism to LLVM**
 
    A very interesing next step is to find a way how to represent GPU's
    workgroups, blocks and threads on the CPU level. This requires a major
