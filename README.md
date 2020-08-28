@@ -3,6 +3,13 @@
 A final summary of my Google Summer of Code 2020 experience with MLIR under
 LLVM Compiler Infrastructure.
 
+  - [Background](#background)
+  - [Motivation](#motivation)
+  - [Aims](#aims)
+  - [Results](#results)
+  - [Challenges](#challenges)
+  
+
 ## Background
 
 Instead of a single intermediate representation (IR) with a closed set of
@@ -63,7 +70,7 @@ following results.
   In terms of the conversion coverage, the SPIR-V to LLVM conversion fully
   supports nearly all scalar and GLSL operations, all control flow operations
   (without loop and selection control), and SPIR-V functions and modules. It also
-  supports all common types that were outlined in the [Aims section](#Aims).
+  supports all common types that were outlined in the [Aims](#aims)  section.
   
   To indicate more precise information of how the conversion works for various types and
   operations, I have created a [conversion manual](https://mlir.llvm.org/docs/SPIRVToLLVMDialectConversion/).
@@ -84,7 +91,7 @@ following results.
   I have created a prototype of the runner and all necessary passes for it. These
   patches have not been committed and pushed to masters as there is a problem
   with the MLIR execution engine infrastructure - more details can be found in the
-  [Challenges section](#Challenges) below.
+  [Challenges](#Challenges) section below.
   
   At the moment, there is no multi-threading/parallelism involved in the conversion.
   Therefore, a case of a single-threaded GPU kernel with scalar code is considered.
