@@ -8,6 +8,10 @@ LLVM Compiler Infrastructure.
   - [Aims](#aims)
   - [Results](#results)
   - [Challenges](#challenges)
+  - [Patches and the work done](#patches-and-the-work-done)
+  - [Important links](#important-links)
+  - [Future work](#future-work)
+  - [Acknowledgement](#acknowledgement)
   
 
 ## Background
@@ -113,7 +117,7 @@ TODO
 
 This section describes the patches I have submitted during the project, as well
 as mentions noteworthy discussions within the community that I have participated
-in. The patches are grouped logically, and are based on the common
+in. I decided to group patches logically - they are based on the common
 functionality or features. All patches have been commited and pushed to master
 unless stated otherwise.
 
@@ -123,10 +127,10 @@ unless stated otherwise.
 
    - [[MLIR][SPIRVToLLVM] Add skeleton for SPIR-V to LLVM dialect conversion](https://reviews.llvm.org/D81100)
 
-2. **Main conversion patterns for scalar ops**
+2. **Main conversion patterns for scalar operations**
 
    These patches include implementations and tests for arithmetic, bitwise,
-   cast, comparison, and logical ops.
+   cast, comparison, and logical operationss.
 
    Patches:
 
@@ -156,7 +160,7 @@ unless stated otherwise.
 4. **SPIR-V function and module conversions**
 
    These patches allow to convert `spv.func` and its control attributes, return
-   ops and include a basic conversion of `spv.module` op.
+   operations and include a basic conversion of `spv.module` operation.
 
    Patches:
 
@@ -164,10 +168,10 @@ unless stated otherwise.
    - [[MLIR][SPIRVToLLVM] Implementation of SPIR-V module conversion pattern](https://reviews.llvm.org/D82468)
    - [[MLIR][SPIRVToLLVM] SPIRV function fix and nits](https://reviews.llvm.org/D83786)
 
-5. **Control flow ops conversion**
+5. **Control flow operations conversion**
 
    These patches implement conversions for branches, function call and
-   structured control flow.
+   structured control flow operations.
 
    Patches:
 
@@ -178,10 +182,10 @@ unless stated otherwise.
    - [[MLIR][SPIRVToLLVM] Branch weights support for BranchConditional conversion](https://reviews.llvm.org/D84657)
    - [[MLIR][SPIRVToLLVM] Conversion pattern for loop op](https://reviews.llvm.org/D84245)
 
-6. **Memory related ops conversion**
+6. **Memory related operations conversion**
    
    A number of patches that implement conversion patterns for `spv.Load`,
-   `spv.Variable` and other ops that involve memory handling.
+   `spv.Variable` and other operations that involve memory handling.
 
    Patches:
 
@@ -191,9 +195,9 @@ unless stated otherwise.
    - [[MLIR][SPIRVToLLVM] Added support of volatile and nontemporal memory access in load/store](https://reviews.llvm.org/D84739)
    - [[MLIR][SPIRVToLLVM] Conversion for global and addressof](https://reviews.llvm.org/D84626)
 
-7. **GLSL ops conversion**
+7. **GLSL operations conversion**
 
-   These patches introduce conversion patterns for ops from
+   These patches introduce conversion patterns for operations from
    [GLSL extended instruction set](https://www.khronos.org/registry/spir-v/specs/1.0/GLSL.std.450.html).
 
    Patches:
@@ -202,9 +206,9 @@ unless stated otherwise.
    - [[MLIR][SPIRVToLLVM] Conversion for inverse sqrt and tanh](https://reviews.llvm.org/D84633)
    - [[MLIR][SPIRVToLLVM] Conversion of GLSL ops to LLVM intrinsics](https://reviews.llvm.org/D84661)
 
-8. **Other ops conversions**
+8. **Other operations conversions**
 
-   These patches include conversion for ops that do not fall into any category
+   These patches include conversion for operations that do not fall into any category
    (like `spv.constant` or `spv.Undef` for example).
 
    Patches:
@@ -215,8 +219,9 @@ unless stated otherwise.
 9. **mlir-spirv-cpu-runner patches**
 
    In order to implement `mlir-spirv-cpu-runner`, I had to submit extra
-   patches to deal with `spc.EntryPoint` or `spv.AccessChain` conversion, as
-   well as to support array strides and struct offsets.
+   patches to deal with `spc.EntryPoint` or `spv.AccessChain` conversion,
+   support array strides and struct offsets, as well as to create a patch
+   to emulate the GPU kernel call in LLVM dialect.
 
    Patches:
 
@@ -236,7 +241,7 @@ unless stated otherwise.
 
 10. **Documentation and style fixes**
 
-    These patches contain the conversion's documentation updates, as well as
+    These patches contain the conversion's manual updates, as well as
     some style/bug fixes.
 
     Patches:
