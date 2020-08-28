@@ -3,43 +3,104 @@
 A final summary of my Google Summer of Code 2020 experience with MLIR under
 LLVM Compiler Infrastructure.
 
-## Background and motivation
+## Background
 
-SPIR-V is a cross-vendor and cross-API intermediate representation that serves
-both graphics and compute. In MLIR, it is modelled as a corresponding dialect
-(mostly focusing on Vulkan compute), and supports multiple conversion lowerings
-to and from it. In my project, I created a missing conversion path from SPIR-V
+Instead of a single intermediate representation (IR) with a closed set of
+operations and types [MLIR](https://mlir.llvm.org) uses dialects - different
+flavours of IR that form a grouping of operations and types under some common
+functionality. These dialects can be converted one to another in a progressive
+way, as well as translated to outside-MLIR IRs such as LLVM IR or SPIR-V.
+
+My project particularly focuses on two dialects: SPIR-V and LLVM dialects. Actual
+SPIR-V is a cross-vendor and cross-API IR that serves both graphics and compute.
+In MLIR, where it is modelled as a corresponding dialect, it supports multiple
+conversion lowerings to it - such as Standard to SPIR-V or SCF to SPIR-V for example. 
+More information about the dialects can be found in the corresponding
+[section](https://mlir.llvm.org/docs/Dialects/) on the official MLIR website.
+
+## Motivation
+
+In my project, I created a missing conversion path from SPIR-V
 dialect to LLVM dialect.
 
-The main motivation is that this conversion enables us to embrace
-SPIR-V into LLVM ecosystem via MLIR dialect conversion interface. This allows to
-translate SPIR-V into CPU machine code and JIT-compile it. More practical
-benefits are outlined in the proposal that can be found under `proposal`
-directory in this repository.
+The main motivation is that this conversion enables to embrace SPIR-V into LLVM
+ecosystem via MLIR dialect conversion interface. Hence, we can convert SPIR-V
+dialect to LLVM, then into CPU machine code and JIT-compile it. Also, SPIR-V
+to LLVM conversion path can help with performance checks when designing new
+conversions or benchmarking execution on different hardware.
+
+More practical benefits include supporting [SwiftShader](https://github.com/google/swiftshader),
+a CPU-based Vulkan implementation, as well as LLVM-based GPU hardware driver compilers
+such as [AMDVLK](https://github.com/GPUOpen-Drivers/AMDVLK).
+
+## Aims
+
+In my proposal I have outlined the following aims of my project:
+
+- Support commonly used types: scalars, vectors, arrays, pointers and structs.
+
+- Support SPIR-V scalar operations conversion (*e.g.* arithmetic or bitwise operations).
+
+- Support operations from [GLSL extended instruction set](https://www.khronos.org/registry/spir-v/specs/1.0/GLSL.std.450.html).
+
+- Support important operations such as `spv.func` and `spv.module`, as well as
+SPIR-V's control flow.
+
+- Support modelling of SPIR-V specific operations such as `spv.EntryPoint` or
+`spv.specConstant` in LLVM dialect.
+
+I have also added a stretch goal - `mlir-spirv-cpu-runner` - a tool that would
+allow executing a host code and a GPU kernel fully on CPU via the conversion path that
+I would have implemented.
 
 ## Results
 
-Having been working on this project for 3 months, the following results were
-achieved.
+At the end of my Google Summer of Code project, I have achieved the
+following results.
 
-- Coverage
+- Conversion coverage
 
-  The conversion nearly fully supports all scalar operations. More precise
-  information on the supported types and operations can be found in the
-  [conversion manual](https://mlir.llvm.org/docs/SPIRVToLLVMDialectConversion/).
+  In terms of the conversion coverage, the SPIR-V to LLVM conversion fully
+  supports nearly all scalar and GLSL operations, all control flow operations
+  (without loop and selection control), and SPIR-V functions and modules. It also
+  supports all common types that were outlined in the [Aims section](#Aims).
+  
+  To indicate more precise information of how the conversion works for various types and
+  operations, I have created a [conversion manual](https://mlir.llvm.org/docs/SPIRVToLLVMDialectConversion/).
+  This document also describes limitations of the current conversion, and types and operations
+  that have not benn implemented yet. 
 
-- SPIR-V CPU runner prototype
+- `mlir-spirv-cpu-runner` prototype
 
-  In order to evaluate the correctness of the conversion, I have
-  implemented a prototype of `mlir-spirv-cpu-runner` that is currently
-  under review. The main idea is that the module with Stadard dialect host
-  code and a GPU dialect kernel module can be fully converted to LLVM dialect
-  via SPIR-V to LLVM path.
+  During my project, I have realised that the conversion for some specific SPIR-V
+  ops may not be releveant for LLVM. For example, specialization constants (`spv.specConstant`
+  in the SPIR-V dialect) are used to inject constant values to half-compiled shader
+  prior to the final compilation stage. Similarly, in the CPU world a program's
+  entry point is a "main" function. Hence, `spv.EntryPoint` operation conversion
+  is mostly important for keeping the metadata associated with the given entry-point
+  function (*e.g.* the workgroup size) in the kernel.
+  
+  As a result, I have been able to focus on my stretch goal - `mlir-spirv-cpu-runner`.
+  I have created a prototype of the runner and all necessary passes for it. These
+  patches have not been committed and pushed to masters as there is a problem
+  with the MLIR execution engine infrastructure - more details can be found in the
+  [Challenges section](#Challenges) below.
+  
+  At the moment, there is no multi-threading/parallelism involved in the conversion.
+  Therefore, a case of a single-threaded GPU kernel with scalar code is considered.
+  Currently, the pipeline for `mlir-spirv-cpu-runner` can be described as follows:
+  
+  - TODO
+  
+  - TODO
+  
+  - TODO
+  
+  ![runner's pipeline][pipeline] TODO
+  
+## Challenges
 
-  At the moment, there is no multi-threading/parallelism involved in the
-  conversion. Hence, my mentors and I decided to limit the runner for the case
-  of a single-threaded kernel. The results are still a great indicator of the
-  semantically correct conversion.
+TODO
 
 ## Patches and the work done
 
