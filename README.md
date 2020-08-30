@@ -91,7 +91,7 @@ following results.
   implement `mlir-spirv-cpu-runner` (originally my stretch goal).
   
   I have created a prototype of this runner tool, and all necessary passes for
-  it. Please note that the patches for `mlir-spirv-cpu-runner` have not been
+  it. Please note that patches for `mlir-spirv-cpu-runner` have not been
   committed and pushed to the main repository as for now.
 
   There is no multi-threading/parallelism involved in the conversion and
