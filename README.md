@@ -12,53 +12,47 @@ LLVM Compiler Infrastructure.
   - [Important links](#important-links)
   - [Future work](#future-work)
   - [Acknowledgement](#acknowledgement)
-  
 
 ## Background
 
 Instead of a single intermediate representation (IR) with a closed set of
-operations and types [MLIR](https://mlir.llvm.org) uses dialects - different
-flavours of IR that form a grouping of operations and types under some common
-functionality. These dialects can be converted one to another in a progressive
-way, as well as translated to outside-MLIR IRs such as LLVM IR or SPIR-V.
+operations and types [MLIR](MLIR) uses dialects - different flavours of IR that
+form a grouping of operations and types under some common functionality. These
+dialects can be converted one to another in a progressive way, as well as
+translated to outside-MLIR IRs such as LLVM IR or SPIR-V.
 
-My project particularly focuses on two dialects: SPIR-V and LLVM dialects. Actual
-SPIR-V is a cross-vendor and cross-API IR that serves both graphics and compute.
-In MLIR, where it is modelled as a corresponding dialect, it supports multiple
-conversion lowerings to it - such as Standard to SPIR-V or SCF to SPIR-V for example. 
-More information about the dialects can be found in the corresponding
-[section](https://mlir.llvm.org/docs/Dialects/) on the official MLIR website.
+My project particularly focuses on two dialects: SPIR-V and LLVM dialects, and
+aims at implementing a missing conversion path from SPIR-V dialect to LLVM
+dialect.
 
 ## Motivation
 
-In my project, I created a missing conversion path from SPIR-V
-dialect to LLVM dialect.
+The motivation behind this project is that the SPIR-V to LLVMM conversion
+enables us to embrace SPIR-V into LLVM's ecosystem via MLIR dialect conversion
+interface. As a result, we can convert SPIR-V dialect to LLVM, then into CPU
+machine code and JIT-compile it. Also, the SPIR-V to LLVM conversion path helps
+with performance checks when designing new conversions or benchmarking execution
+on different hardware.
 
-The main motivation is that this conversion enables to embrace SPIR-V into LLVM
-ecosystem via MLIR dialect conversion interface. Hence, we can convert SPIR-V
-dialect to LLVM, then into CPU machine code and JIT-compile it. Also, SPIR-V
-to LLVM conversion path can help with performance checks when designing new
-conversions or benchmarking execution on different hardware.
-
-More practical benefits include supporting [SwiftShader](https://github.com/google/swiftshader),
-a CPU-based Vulkan implementation, as well as LLVM-based GPU hardware driver compilers
-such as [AMDVLK](https://github.com/GPUOpen-Drivers/AMDVLK).
+More practical benefits include supporting [SwiftShader](SwiftShader), a
+CPU-based Vulkan implementation, as well as LLVM-based GPU hardware driver
+compilers such as [AMDVLK](AMDVLK).
 
 ## Aims
 
-In my proposal I have outlined the following aims of my project:
+In my proposal I have originally outlined the following aims for the project:
 
 - Support commonly used types: scalars, vectors, arrays, pointers and structs.
 
 - Support SPIR-V scalar operations conversion (*e.g.* arithmetic or bitwise operations).
 
-- Support operations from [GLSL extended instruction set](https://www.khronos.org/registry/spir-v/specs/1.0/GLSL.std.450.html).
+- Support operations from [GLSL extended instruction set](GLSL).
 
 - Support important operations such as `spv.func` and `spv.module`, as well as
 SPIR-V's control flow.
 
-- Support modelling of SPIR-V specific operations such as `spv.EntryPoint` or
-`spv.specConstant` in LLVM dialect.
+- Model SPIR-V specific operations such as entry points or specialization
+constants in LLVM dialect.
 
 I have also added a stretch goal - `mlir-spirv-cpu-runner` - a tool that would
 allow executing a host code and a GPU kernel fully on CPU via the conversion path that
@@ -69,7 +63,7 @@ I would have implemented.
 At the end of my Google Summer of Code project, I have achieved the
 following results.
 
-- Conversion coverage
+- **Conversion coverage**
 
   In terms of the conversion coverage, the SPIR-V to LLVM conversion fully
   supports nearly all scalar and GLSL operations, all control flow operations
@@ -77,49 +71,84 @@ following results.
   supports all common types that were outlined in the [Aims](#aims)  section.
   
   To indicate more precise information of how the conversion works for various types and
-  operations, I have created a [conversion manual](https://mlir.llvm.org/docs/SPIRVToLLVMDialectConversion/).
-  This document also describes limitations of the current conversion, and types and operations
-  that have not benn implemented yet. 
+  operations, I have created a [conversion manual](manual). This document also describes
+  any limitations of the current conversion, and types and operations that have not been
+  implemented yet.
 
-- `mlir-spirv-cpu-runner` prototype
+- **`mlir-spirv-cpu-runner` prototype**
 
-  During my project, I have realised that the conversion for some specific SPIR-V
-  ops may not be releveant for LLVM. For example, specialization constants (`spv.specConstant`
-  in the SPIR-V dialect) are used to inject constant values to half-compiled shader
-  prior to the final compilation stage. Similarly, in the CPU world a program's
-  entry point is a "main" function. Hence, `spv.EntryPoint` operation conversion
-  is mostly important for keeping the metadata associated with the given entry-point
-  function (*e.g.* the workgroup size) in the kernel.
+  During my project, I have realised that the conversion for some specific
+  SPIR-V operations may not be relevant for LLVM. For example, specialization
+  constants (`spv.specConstant` in the SPIR-V dialect) are used to inject
+  constant values to half-compiled shader code prior to the final compilation
+  stage, and therefore are not fully relevant to the conversion flow. Similarly,
+  in the CPU world a program's entry point is a "main" function. Hence,
+  `spv.EntryPoint` operation conversion is mostly important for keeping the
+  metadata associated with the given entry-point function (*e.g.* the workgroup
+  size) in the kernel.
+
+  As a result, my mentors and I have decided that it would be more reasonable to
+  implement `mlir-spirv-cpu-runner` (originally my stretch goal).
   
-  As a result, I have been able to focus on my stretch goal - `mlir-spirv-cpu-runner`.
-  I have created a prototype of the runner and all necessary passes for it. These
-  patches have not been committed and pushed to masters as there is a problem
-  with the MLIR execution engine infrastructure - more details can be found in the
-  [Challenges](#Challenges) section below.
+  I have created a prototype of this runner tool, and all necessary passes for
+  it. Please note that the patches for `mlir-spirv-cpu-runner` have not been
+  committed and pushed to the main repository as for now.
+
+  There is no multi-threading/parallelism involved in the conversion and
+  therefore a case of a single-threaded GPU kernel with scalar code is
+  considered. Currently, the pipeline for `mlir-spirv-cpu-runner` can be
+  described as follows:
   
-  At the moment, there is no multi-threading/parallelism involved in the conversion.
-  Therefore, a case of a single-threaded GPU kernel with scalar code is considered.
-  Currently, the pipeline for `mlir-spirv-cpu-runner` can be described as follows:
+  - Convert the GPU kernel into SPIR-V dialect and apply all necessary
+    transformations in order to get a valid SPIR-V module.
+
+  - Emulate the kernel call by converting the launching operation into a normal
+    function call. The data from the host side to the device is passed via
+    copying to global variables. These are created in both the host and the
+    kernel code and later linked when nested modules are folded.
   
-  - TODO
-  
-  - TODO
-  
-  - TODO
-  
+  - Convert SPIR-V to LLVM via the new conversion path.
+
   ![runner's pipeline][pipeline] TODO
+
+  After these passes the IR transforms into a nested LLVM module - a main one
+  that represents the host code and a kernel module. These modules are linked
+  and executed.
   
 ## Challenges
 
-TODO
+There were a number of challenges that I have encountered while working on the
+project.
+
+- LLVM and MLIR have a wide range of APIs that help working with the data
+  structures, etc. Sometimes it was not that easy to find the one that suits
+  the best in a particular situation. However, thanks to advices from the
+  community this problem was usually promptly resolved.
+
+- MLIR is a young and rapidly evolving project, and I found that sometimes the
+  current infrastructure may not be enough.
+
+  Particularly, this was the case of `mlir-spirv-cpu-runner`. After all
+  transformations have been applied, the IR became a nested LLVM dialect module
+  that had to be translated to proper LLVM IR and linked with the nested modules
+  inside it. Unfortunately, the current infrastructure of the MLIR's `JitRunner`
+  and `ExecutionEngine` did not support the translation and the linking of
+  multiple MLIR modules.
+
+  The intermediate solution I have implemented was to pass an optional function
+  callback to a custom LLVM IR module builder. This allowed to fold the nested
+  MLIR module into a single LLVM IR module. This is not a final solution as
+  `mlir::JitRunner` and `mlir::ExecutionEngine` may need to be refined to get
+  closer to or reuse the functionaity of their LLVM counterparts).
 
 ## Patches and the work done
 
-This section describes the patches I have submitted during the project, as well
-as mentions noteworthy discussions within the community that I have participated
-in. I decided to group patches logically - they are based on the common
-functionality or features. All patches have been commited and pushed to master
-unless stated otherwise.
+I was working on the project incrementally, submitting patches separately for
+each group of operations or feature. Below is the list of patches that I have
+submitted during the project, as well some noteworthy discussions within the
+community that I have participated in. I decided to group patches logically -
+they are based on the common functionality or features. All patches have been
+commited and pushed to the main LLVM repository unless stated otherwise.
 
 1. **Setting up the core infrastructure required for the SPIR-V to LLVM dialect conversion**
 
@@ -170,8 +199,8 @@ unless stated otherwise.
 
 5. **Control flow operations conversion**
 
-   These patches implement conversions for branches, function call and
-   structured control flow operations.
+   These patches implement conversions for branch, function call and structured
+   control flow operations.
 
    Patches:
 
@@ -198,7 +227,7 @@ unless stated otherwise.
 7. **GLSL operations conversion**
 
    These patches introduce conversion patterns for operations from
-   [GLSL extended instruction set](https://www.khronos.org/registry/spir-v/specs/1.0/GLSL.std.450.html).
+   [GLSL extended instruction set](GLSL).
 
    Patches:
 
@@ -208,8 +237,8 @@ unless stated otherwise.
 
 8. **Other operations conversions**
 
-   These patches include conversion for operations that do not fall into any category
-   (like `spv.constant` or `spv.Undef` for example).
+   These patches include conversion for operations that do not fall into other
+   categoris (like `spv.constant` or `spv.Undef` for example).
 
    Patches:
 
@@ -219,9 +248,9 @@ unless stated otherwise.
 9. **mlir-spirv-cpu-runner patches**
 
    In order to implement `mlir-spirv-cpu-runner`, I had to submit extra
-   patches to deal with `spc.EntryPoint` or `spv.AccessChain` conversion,
-   support array strides and struct offsets, as well as to create a patch
-   to emulate the GPU kernel call in LLVM dialect.
+   patches to deal with `spv.EntryPoint` or `spv.AccessChain` conversion,
+   support array strides and struct offsets, as well as to create a pass
+   that emulates the GPU kernel call in LLVM dialect.
 
    Patches:
 
@@ -267,30 +296,36 @@ unless stated otherwise.
 
 ## Important links
 
-Original proposal can be found in this repository under `proposal` directory. In
-addition, an online public version can be found [here](https://llvm.discourse.group/t/gsoc-proposal-spir-v-to-llvm-ir-dialect-conversion-in-mlir/812).
+The original proposal can be found in this repository under `proposal`
+directory. In addition, an online public version can be found [here](proposal).
 
-During my project, I was keeping a Google doc where I interacted with my mentors
-and documented what has been done, what challenges I have encountered, and my
-plans. The public copy is availiable [here](https://docs.google.com/document/d/1nnA8Rf3R18_V4GsYu0rWNFAUoH6fewFptWH08Eqx4gI/edit?usp=sharing).
+During my project, I was keeping a document where I interacted with my mentors
+and tracked what has been done, what challenges I have encountered, and my
+plans. The public copy is availiable [here](doc) (The comments from the original
+document have tot been saved in the copy).
 
 I have also created a manual to document what is supported in the SPIR-V to LLVM
-dialect conversion at the moment. This can be found on official MLIR website
-under [SPIR-V Dialect to LLVM Dialect conversion manual](https://mlir.llvm.org/docs/SPIRVToLLVMDialectConversion/).
+dialect conversion at the moment. This can be found on the official MLIR website
+under [SPIR-V Dialect to LLVM Dialect conversion manual](manual).
 
-All conversion code can be found in `SPIRVToLLVM` directory in LLVM
+All conversion code that I wrote can be found in `SPIRVToLLVM` directory in LLVM
 repository, particularly:
- - Conversion headers and implementation can be found
-  [here](https://github.com/llvm/llvm-project/tree/05777ab941063192b9ccb1775358a83a2700ccc1/mlir/include/mlir/Conversion/SPIRVToLLVM)
-  and [here](https://github.com/llvm/llvm-project/tree/05777ab941063192b9ccb1775358a83a2700ccc1/mlir/lib/Conversion/SPIRVToLLVM)
- - Tests are located [here](https://github.com/llvm/llvm-project/tree/05777ab941063192b9ccb1775358a83a2700ccc1/mlir/test/Conversion/SPIRVToLLVM)
 
-The runner code has not been landed to master yet.
+ - Conversion headers and implementation can be found[here](SPIRVToLLVMImpl) and
+   [here](SPIRVToLLVMIncludes)
+
+ - Tests are located [here](SPIRVToLLVMTests)
+
+Since the `mlir-spirv-cpu-runner`'s code has not been landed to yet, I have not
+included the location of the code for it. However, this can be seen in the
+related patches: https://reviews.llvm.org/D86112 and
+https://reviews.llvm.org/D86108.
 
 ## Future work
 
-The work on the SPIR-V to LLVM dialect conversion my be continued in the
-following ways:
+Personally, I plan to continue working on the SPIR-V to LLVM dialect conversion.
+However, any contributions are welcome. The work on the conversion my be
+continued in the following ways:
 
 1. **Land the `mlir-spirv-cpu-runner`**
 
@@ -299,9 +334,9 @@ following ways:
    This is not a nice way and needs a better solution. A possible approach
    would be to improve `mlir::ExecutionEngine`. More can be found in related
    [revision](https://reviews.llvm.org/D86108) and
-   [discussion](https://llvm.discourse.group/t/rfc-executing-multiple-mlir-modules/1616/3).
+   [discussion](exec-multiple-modules).
 
-2. **Add more type/op conversions or scale existing conversion patterns**
+2. **Add more type/operations conversions or scale existing conversion patterns**
 
    A great way to continue the current work would be adding new conversion
    patters, *e.g.* for atomic ops. Also, more types like `spv.matrix` can be
@@ -311,18 +346,18 @@ following ways:
    including but not limited to having a `spv.constant` to support arrays and
    structs or map `spv.loop`'s control to LLVM IR metadata.
    
-   Not that what has not been done can be easily deduced from the conversion
-   manual described above.
+   Note that what has not been done can be easily deduced from the conversion
+   [manual](manual) described above.
 
 3. **Model SPIR-V decorations in LLVM dialect**
 
    This project did not intend to add support for SPIR-V decoration attributes.
    However, they can be mapped to LLVM IR metadata/flags/etc. A good starting
-   point would be a [post](https://llvm.discourse.group/t/spir-v-to-llvm-dialect-conversion-decorations-and-other-attributes-semantics/1179) on modelling some of these decorations.
+   point would be a [post](decorations) on modelling some of these decorations.
 
 4. **Map GPU-level multi-threading/parallelism to LLVM**
 
-   A very interesing next step is to find a way how to represent GPU's
+   A very interesing next step is to find a way of how to represent GPU's
    workgroups, blocks and threads on the CPU level. This requires a major
    discussion within the community, so it can be considered as a long-term
    goal.
@@ -336,3 +371,16 @@ Alex Zinenko for his help on the LLVM side, and River Riddle for his help with
 code reviews and C++/LLVM/MLIR APIs.
 
 Special thanks to all LLVM/MLIR community members for their advice and comments.
+
+[AMDVLK]: https://github.com/GPUOpen-Drivers/AMDVLK
+[decorations]: https://llvm.discourse.group/t/spir-v-to-llvm-dialect-conversion-decorations-and-other-attributes-semantics/1179
+[doc]: https://docs.google.com/document/d/1nnA8Rf3R18_V4GsYu0rWNFAUoH6fewFptWH08Eqx4gI/edit?usp=sharing
+[exec-multiple-modules]: https://llvm.discourse.group/t/rfc-executing-multiple-mlir-modules/1616/3
+[GLSL]: https://www.khronos.org/registry/spir-v/specs/1.0/GLSL.std.450.html
+[manual]: https://mlir.llvm.org/docs/SPIRVToLLVMDialectConversion/
+[MLIR]: https://mlir.llvm.org
+[proposal]: https://llvm.discourse.group/t/gsoc-proposal-spir-v-to-llvm-ir-dialect-conversion-in-mlir/812
+[SPIRVToLLVMImpl]: https://github.com/llvm/llvm-project/tree/05777ab941063192b9ccb1775358a83a2700ccc1/mlir/lib/Conversion/SPIRVToLLVM
+[SPIRVToLLVMIncludes]: https://github.com/llvm/llvm-project/tree/05777ab941063192b9ccb1775358a83a2700ccc1/mlir/include/mlir/Conversion/SPIRVToLLVM
+[SPIRVToLLVMTests]: https://github.com/llvm/llvm-project/tree/05777ab941063192b9ccb1775358a83a2700ccc1/mlir/test/Conversion/SPIRVToLLVM
+[SwiftShader]: https://github.com/google/swiftshader
