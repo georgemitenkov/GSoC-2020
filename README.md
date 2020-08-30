@@ -109,7 +109,7 @@ following results.
   
   - Convert SPIR-V to LLVM via the new conversion path.
 
-  ![runner's pipeline][pipeline] TODO
+  ![runner's pipeline][pipeline-figure]
 
   After these passes the IR transforms into a nested LLVM module - a main one
   that represents the host code and a kernel module. These modules are linked
@@ -333,7 +333,7 @@ continued in the following ways:
    callback to propagate information about how to construct an LLVM IR module.
    This is not a nice way and needs a better solution. A possible approach
    would be to improve `mlir::ExecutionEngine`. More can be found in related
-   [revision][https://reviews.llvm.org/D86108] and
+   [revision](https://reviews.llvm.org/D86108) and
    [discussion][exec-multiple-modules].
 
 2. **Add more type/operations conversions or scale existing conversion patterns**
