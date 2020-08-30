@@ -302,7 +302,7 @@ directory. In addition, an online public version can be found [here][proposal].
 During my project, I was keeping a document where I interacted with my mentors
 and tracked what has been done, what challenges I have encountered, and my
 plans. The public copy is availiable [here][doc] (The comments from the original
-document have tot been saved in the copy).
+document have not been saved in the copy).
 
 I have also created a manual to document what is supported in the SPIR-V to LLVM
 dialect conversion at the moment. This can be found on the official MLIR website
