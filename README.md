@@ -117,7 +117,7 @@ following results.
   
 ## Challenges
 
-There were a number of challenges that I have encountered while working on the
+There was a number of challenges that I have encountered while working on the
 project.
 
 - LLVM and MLIR have a wide range of APIs that help working with data
@@ -128,7 +128,7 @@ project.
 - MLIR is a young and rapidly evolving project, and I found that sometimes the
   current infrastructure may not be enough.
 
-  Particularly, this was the case of `mlir-spirv-cpu-runner`. After all
+  Particularly, this was the case for `mlir-spirv-cpu-runner`. After all
   transformations have been applied, the IR became a nested LLVM dialect module
   that had to be translated to proper LLVM IR and linked with the nested modules
   inside it. Unfortunately, the current infrastructure of the MLIR's `JitRunner`
@@ -139,7 +139,7 @@ project.
   callback to a custom LLVM IR module builder. This allowed to fold the nested
   MLIR module into a single LLVM IR module. This is not a final solution as
   `mlir::JitRunner` and `mlir::ExecutionEngine` may need to be refined to get
-  closer to or reuse the functionaity of their LLVM counterparts).
+  closer to or to reuse the functionaity of their LLVM counterparts).
 
 ## Patches and the work done
 
@@ -312,19 +312,19 @@ All conversion code that I wrote can be found in `SPIRVToLLVM` directory in LLVM
 repository, particularly:
 
  - Conversion headers and implementation can be found [here][SPIRVToLLVMImpl] and
-   [here][SPIRVToLLVMIncludes]
+   [here][SPIRVToLLVMIncludes].
 
- - Tests are located [here][SPIRVToLLVMTests]
+ - Tests are located [here][SPIRVToLLVMTests].
 
 Since the `mlir-spirv-cpu-runner`'s code has not been landed to yet, I have not
-included the location of the code for it. However, this can be seen in the
+included the location of the code for it. However, this can be found in the
 related patches: https://reviews.llvm.org/D86112 and
 https://reviews.llvm.org/D86108.
 
 ## Future work
 
 Personally, I plan to continue working on the SPIR-V to LLVM dialect conversion.
-However, any contributions are welcome. The work on the conversion my be
+However, any contributions are welcome. The work on the conversion may be
 continued in the following ways:
 
 1. **Land the `mlir-spirv-cpu-runner`**
@@ -339,8 +339,8 @@ continued in the following ways:
 2. **Add more type/operations conversions or scale existing conversion patterns**
 
    A great way to continue the current work would be adding new conversion
-   patters, *e.g.* for atomic ops. Also, more types like `spv.matrix` can be
-   supported.
+   patterns, *e.g.* for atomic operations. Also, more types like `spv.matrix`
+   can be supported.
    
    Another possible contribution is to scale some of the existing patterns,
    including but not limited to having a `spv.constant` to support arrays and
