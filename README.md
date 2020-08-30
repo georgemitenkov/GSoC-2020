@@ -16,7 +16,7 @@ LLVM Compiler Infrastructure.
 ## Background
 
 Instead of a single intermediate representation (IR) with a closed set of
-operations and types [MLIR](MLIR) uses dialects - different flavours of IR that
+operations and types [MLIR][MLIR] uses dialects - different flavours of IR that
 form a grouping of operations and types under some common functionality. These
 dialects can be converted one to another in a progressive way, as well as
 translated to outside-MLIR IRs such as LLVM IR or SPIR-V.
@@ -27,16 +27,16 @@ dialect.
 
 ## Motivation
 
-The motivation behind this project is that the SPIR-V to LLVMM conversion
+The motivation behind this project is that the SPIR-V to LLVM conversion
 enables us to embrace SPIR-V into LLVM's ecosystem via MLIR dialect conversion
 interface. As a result, we can convert SPIR-V dialect to LLVM, then into CPU
 machine code and JIT-compile it. Also, the SPIR-V to LLVM conversion path helps
 with performance checks when designing new conversions or benchmarking execution
 on different hardware.
 
-More practical benefits include supporting [SwiftShader](SwiftShader), a
+More practical benefits include supporting [SwiftShader][SwiftShader], a
 CPU-based Vulkan implementation, as well as LLVM-based GPU hardware driver
-compilers such as [AMDVLK](AMDVLK).
+compilers such as [AMDVLK][AMDVLK].
 
 ## Aims
 
@@ -46,7 +46,7 @@ In my proposal I have originally outlined the following aims for the project:
 
 - Support SPIR-V scalar operations conversion (*e.g.* arithmetic or bitwise operations).
 
-- Support operations from [GLSL extended instruction set](GLSL).
+- Support operations from [GLSL extended instruction set][GLSL].
 
 - Support important operations such as `spv.func` and `spv.module`, as well as
 SPIR-V's control flow.
@@ -55,12 +55,12 @@ SPIR-V's control flow.
 constants in LLVM dialect.
 
 I have also added a stretch goal - `mlir-spirv-cpu-runner` - a tool that would
-allow executing a host code and a GPU kernel fully on CPU via the conversion path that
-I would have implemented.
+allow executing the host code and a GPU kernel fully on CPU via the conversion
+path that I would have implemented.
 
 ## Results
 
-At the end of my Google Summer of Code project, I have achieved the
+By the end of my Google Summer of Code project, I have achieved the
 following results.
 
 - **Conversion coverage**
@@ -71,7 +71,7 @@ following results.
   supports all common types that were outlined in the [Aims](#aims)  section.
   
   To indicate more precise information of how the conversion works for various types and
-  operations, I have created a [conversion manual](manual). This document also describes
+  operations, I have created a [conversion manual][manual]. This document also describes
   any limitations of the current conversion, and types and operations that have not been
   implemented yet.
 
@@ -120,7 +120,7 @@ following results.
 There were a number of challenges that I have encountered while working on the
 project.
 
-- LLVM and MLIR have a wide range of APIs that help working with the data
+- LLVM and MLIR have a wide range of APIs that help working with data
   structures, etc. Sometimes it was not that easy to find the one that suits
   the best in a particular situation. However, thanks to advices from the
   community this problem was usually promptly resolved.
@@ -297,24 +297,24 @@ commited and pushed to the main LLVM repository unless stated otherwise.
 ## Important links
 
 The original proposal can be found in this repository under `proposal`
-directory. In addition, an online public version can be found [here](proposal).
+directory. In addition, an online public version can be found [here][proposal].
 
 During my project, I was keeping a document where I interacted with my mentors
 and tracked what has been done, what challenges I have encountered, and my
-plans. The public copy is availiable [here](doc) (The comments from the original
+plans. The public copy is availiable [here][doc] (The comments from the original
 document have tot been saved in the copy).
 
 I have also created a manual to document what is supported in the SPIR-V to LLVM
 dialect conversion at the moment. This can be found on the official MLIR website
-under [SPIR-V Dialect to LLVM Dialect conversion manual](manual).
+under [SPIR-V Dialect to LLVM Dialect conversion manual][manual].
 
 All conversion code that I wrote can be found in `SPIRVToLLVM` directory in LLVM
 repository, particularly:
 
- - Conversion headers and implementation can be found[here](SPIRVToLLVMImpl) and
-   [here](SPIRVToLLVMIncludes)
+ - Conversion headers and implementation can be found [here][SPIRVToLLVMImpl] and
+   [here][SPIRVToLLVMIncludes]
 
- - Tests are located [here](SPIRVToLLVMTests)
+ - Tests are located [here][SPIRVToLLVMTests]
 
 Since the `mlir-spirv-cpu-runner`'s code has not been landed to yet, I have not
 included the location of the code for it. However, this can be seen in the
@@ -333,8 +333,8 @@ continued in the following ways:
    callback to propagate information about how to construct an LLVM IR module.
    This is not a nice way and needs a better solution. A possible approach
    would be to improve `mlir::ExecutionEngine`. More can be found in related
-   [revision](https://reviews.llvm.org/D86108) and
-   [discussion](exec-multiple-modules).
+   [revision][https://reviews.llvm.org/D86108] and
+   [discussion][exec-multiple-modules].
 
 2. **Add more type/operations conversions or scale existing conversion patterns**
 
@@ -347,13 +347,13 @@ continued in the following ways:
    structs or map `spv.loop`'s control to LLVM IR metadata.
    
    Note that what has not been done can be easily deduced from the conversion
-   [manual](manual) described above.
+   [manual][manual] described above.
 
 3. **Model SPIR-V decorations in LLVM dialect**
 
    This project did not intend to add support for SPIR-V decoration attributes.
    However, they can be mapped to LLVM IR metadata/flags/etc. A good starting
-   point would be a [post](decorations) on modelling some of these decorations.
+   point would be a [post][decorations] on modelling some of these decorations.
 
 4. **Map GPU-level multi-threading/parallelism to LLVM**
 
