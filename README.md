@@ -109,7 +109,7 @@ following results.
   
   - Convert SPIR-V to LLVM via the new conversion path.
 
-  ![runner's pipeline][pipeline-figure]
+  ![runner's pipeline][pipeline-figure.png]
 
   After these passes the IR transforms into a nested LLVM module - a main one
   that represents the host code and a kernel module. These modules are linked
